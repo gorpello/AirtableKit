@@ -202,7 +202,7 @@ public final class Airtable: NSObject {
 
 extension Airtable: URLSessionDelegate {
     
-    /*public func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+    public func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         if let trust = challenge.protectionSpace.serverTrust, SecTrustGetCertificateCount(trust) > 0 {
             if let certificate = SecTrustGetCertificateAtIndex(trust, 0) {
                 let data = SecCertificateCopyData(certificate) as Data
@@ -213,7 +213,7 @@ extension Airtable: URLSessionDelegate {
             }
         }
         completionHandler(.cancelAuthenticationChallenge, nil)
-    }*/
+    }
     
     func performRequest<T>(_ request: URLRequest?, decoder: @escaping (Data) throws -> T) -> AnyPublisher<T, AirtableError> {
         guard let urlRequest = request else {
