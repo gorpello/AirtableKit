@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Xcode
 
 .DS_Store
@@ -73,3 +74,12 @@ fastlane/test_output
 # Code Injection
 
 iOSInjectionProject/
+=======
+.DS_Store
+/.build
+/Packages
+/*.xcodeproj
+xcuserdata/
+DerivedData/
+.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
+>>>>>>> 14ccd85 (Initial Commit)

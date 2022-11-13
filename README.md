@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!-- Title -->
 # AirtableKit
 
@@ -170,3 +171,8 @@ let publisher = airtable.delete(tableName: tableName, recordsIDs: ["YOUR_AIRTABL
 ## Documentation
 
 Full documentation of the types and methods is [available on the wiki pages](https://github.com/appledeveloperacademypucrs/AirtableKit/wiki).
+=======
+# AirtableKit
+
+A description of this package.
+>>>>>>> 14ccd85 (Initial Commit)
