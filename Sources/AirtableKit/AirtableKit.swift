@@ -212,6 +212,7 @@ extension Airtable: URLSessionDelegate {
                 }
             }
         }
+        print("Challenge Failed")
         completionHandler(.cancelAuthenticationChallenge, nil)
     }
     
