@@ -202,21 +202,28 @@ public final class Airtable: NSObject {
 
 extension Airtable: URLSessionDelegate {
     
-    /*
-    public func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        if let trust = challenge.protectionSpace.serverTrust, SecTrustGetCertificateCount(trust) > 0 {
-            if let certificate = SecTrustGetCertificateAtIndex(trust, 0) {
-                let data = SecCertificateCopyData(certificate) as Data
-                if certificates.contains(data) {
-                    completionHandler(.useCredential, URLCredential(trust: trust))
-                    return
-                }
-            }
+    public func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge) async -> (URLSession.AuthChallengeDisposition, URLCredential?) {
+        
+        guard let trust = challenge.protectionSpace.serverTrust,
+              SecTrustGetCertificateCount(trust) > 0 else {
+            print("Missing trust")
+            return (.cancelAuthenticationChallenge, nil)
         }
-        print("Challenge Failed")
-        completionHandler(.cancelAuthenticationChallenge, nil)
+        
+        guard let certificate = SecTrustGetCertificateAtIndex(trust, 0) else {
+            print("Missing cerificate trust")
+            return (.cancelAuthenticationChallenge, nil)
+        }
+        
+        let data = SecCertificateCopyData(certificate) as Data
+        
+        guard certificates.contains(data) else {
+            print("Data Challenge Failed")
+            return (.cancelAuthenticationChallenge, nil)
+        }
+
+        return(.useCredential, URLCredential(trust: trust))
     }
-     */
     
     func performRequest<T>(_ request: URLRequest?, decoder: @escaping (Data) throws -> T) -> AnyPublisher<T, AirtableError> {
         guard let urlRequest = request else {
