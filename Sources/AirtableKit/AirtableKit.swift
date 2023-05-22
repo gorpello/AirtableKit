@@ -12,6 +12,17 @@ public final class Airtable: NSObject {
     /// API key of the user manipulating the base.
     public let apiKey: String
     
+    /// List of certificate for secure pinning connection
+    /// At least one is required.
+    ///
+    ///     private lazy var certificates: [Data] = {
+    ///       let url = Bundle.module.url(forResource: "airtable", withExtension: "der")!
+    ///       let data = try! Data(contentsOf: url)
+    ///       return [data]
+    ///     }()
+    ///
+    public let certificates: [Data]
+    
     private static let batchLimit: Int = 10
     private static let airtableURL: URL = URL(string: "https://api.airtable.com/v0")!
     private var baseURL: URL { Self.airtableURL.appendingPathComponent(baseID) }
@@ -20,13 +31,6 @@ public final class Airtable: NSObject {
     private let responseDecoder: ResponseDecoder = ResponseDecoder()
     private let errorHander: ErrorHandler = ErrorHandler()
     
-    private lazy var certificates: [Data] = {
-        let url = Bundle.module.url(forResource: "airtable", withExtension: "der")!
-
-        let data = try! Data(contentsOf: url)
-        return [data]
-    }()
-    
     private var session: URLSession!
     
     /// Initializes the client to work on a base using the specified API key.
@@ -34,9 +38,10 @@ public final class Airtable: NSObject {
     /// - Parameters:
     ///   - baseID: The ID of the base manipulated by the client.
     ///   - apiKey: The API key of the user manipulating the base.
-    public init(baseID: String, apiKey: String) {
+    public init(baseID: String, apiKey: String, certidicate: [Data]) {
         self.baseID = baseID
         self.apiKey = apiKey
+        self.certificates = certidicate
         super.init()
         session = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
 
@@ -203,7 +208,7 @@ public final class Airtable: NSObject {
 extension Airtable: URLSessionDelegate {
     
     public func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge) async -> (URLSession.AuthChallengeDisposition, URLCredential?) {
-        
+
         guard let trust = challenge.protectionSpace.serverTrust,
               SecTrustGetCertificateCount(trust) > 0 else {
             print("Missing trust")
@@ -219,10 +224,17 @@ extension Airtable: URLSessionDelegate {
         
         guard certificates.contains(data) else {
             print("Data Challenge Failed")
+            getUpdatedCertificate()
             return (.cancelAuthenticationChallenge, nil)
         }
 
         return(.useCredential, URLCredential(trust: trust))
+    }
+    
+    
+    /// Get New Certificate from Airable API.
+    func getUpdatedCertificate() {
+        
     }
     
     func performRequest<T>(_ request: URLRequest?, decoder: @escaping (Data) throws -> T) -> AnyPublisher<T, AirtableError> {
